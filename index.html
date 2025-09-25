@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Percentage Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1e1e2f;
+      color: #f1f1f1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #2c2c40;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    input {
+      width: 80px;
+      padding: 8px;
+      margin: 5px;
+      border-radius: 6px;
+      border: none;
+      text-align: center;
+    }
+    button {
+      background: #4cafef;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+      font-size: 1em;
+    }
+    .result {
+      margin-top: 15px;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📊 Study % of Screen Time</h2>
+    <p>Enter your study time and total screen time:</p>
+    
+    <div>
+      <label>Study Time: </label><br>
+      <input type="number" id="studyHours" placeholder="hrs" min="0"> h
+      <input type="number" id="studyMinutes" placeholder="mins" min="0" max="59"> m
+    </div>
+
+    <div>
+      <label>Screen Time: </label><br>
+      <input type="number" id="screenHours" placeholder="hrs" min="0"> h
+      <input type="number" id="screenMinutes" placeholder="mins" min="0" max="59"> m
+    </div>
+
+    <button onclick="calculate()">Calculate</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    function calculate() {
+      const studyH = parseInt(document.getElementById('studyHours').value) || 0;
+      const studyM = parseInt(document.getElementById('studyMinutes').value) || 0;
+      const screenH = parseInt(document.getElementById('screenHours').value) || 0;
+      const screenM = parseInt(document.getElementById('screenMinutes').value) || 0;
+
+      const studyTotal = studyH * 60 + studyM;
+      const screenTotal = screenH * 60 + screenM;
+
+      if (screenTotal === 0) {
+        document.getElementById('result').innerText = "⚠️ Screen time cannot be 0!";
+        return;
+      }
+
+      const percentage = (studyTotal / screenTotal) * 100;
+      document.getElementById('result').innerText = `✅ You studied ${percentage.toFixed(2)}% of your screen time.`;
+    }
+  </script>
+</body>
+</html>
