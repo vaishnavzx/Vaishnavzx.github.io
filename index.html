@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Study Percentage Calculator</title>
+  <title>3-Day Study Percentage Calculator</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -12,20 +12,34 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
+      padding: 20px;
     }
     .container {
       background: #2c2c40;
-      padding: 20px;
+      padding: 25px;
       border-radius: 12px;
       box-shadow: 0 0 10px rgba(0,0,0,0.4);
-      max-width: 400px;
+      max-width: 500px;
       width: 100%;
       text-align: center;
     }
+    .day-section {
+      background: #3a3a52;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      text-align: left;
+    }
+    .day-header {
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #4cafef;
+      font-size: 1.1em;
+    }
     input {
-      width: 80px;
+      width: 70px;
       padding: 8px;
       margin: 5px;
       border-radius: 6px;
@@ -39,54 +53,154 @@
       padding: 12px 24px;
       border-radius: 8px;
       cursor: pointer;
-      margin-top: 15px;
+      margin: 10px 5px;
       font-size: 1em;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #389cd9;
     }
     .result {
-      margin-top: 15px;
-      font-size: 1.2em;
+      margin-top: 20px;
+      font-size: 1.3em;
       font-weight: bold;
+      padding: 15px;
+      border-radius: 8px;
+      background: #3a3a52;
+    }
+    .total-stats {
+      margin: 15px 0;
+      padding: 10px;
+      background: #3a3a52;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>📊 Study % of Screen Time</h2>
-    <p>Enter your study time and total screen time:</p>
+    <h2>📊 3-Day Study Percentage Calculator</h2>
+    <p>Enter your study time and screen time for each day:</p>
     
-    <div>
-      <label>Study Time: </label><br>
-      <input type="number" id="studyHours" placeholder="hrs" min="0"> h
-      <input type="number" id="studyMinutes" placeholder="mins" min="0" max="59"> m
+    <!-- Day 1 -->
+    <div class="day-section">
+      <div class="day-header">📅 Day 1</div>
+      <div>
+        <label>Study Time: </label>
+        <input type="number" id="day1StudyHours" placeholder="hrs" min="0"> h
+        <input type="number" id="day1StudyMinutes" placeholder="mins" min="0" max="59"> m
+      </div>
+      <div>
+        <label>Screen Time: </label>
+        <input type="number" id="day1ScreenHours" placeholder="hrs" min="0"> h
+        <input type="number" id="day1ScreenMinutes" placeholder="mins" min="0" max="59"> m
+      </div>
     </div>
 
-    <div>
-      <label>Screen Time: </label><br>
-      <input type="number" id="screenHours" placeholder="hrs" min="0"> h
-      <input type="number" id="screenMinutes" placeholder="mins" min="0" max="59"> m
+    <!-- Day 2 -->
+    <div class="day-section">
+      <div class="day-header">📅 Day 2</div>
+      <div>
+        <label>Study Time: </label>
+        <input type="number" id="day2StudyHours" placeholder="hrs" min="0"> h
+        <input type="number" id="day2StudyMinutes" placeholder="mins" min="0" max="59"> m
+      </div>
+      <div>
+        <label>Screen Time: </label>
+        <input type="number" id="day2ScreenHours" placeholder="hrs" min="0"> h
+        <input type="number" id="day2ScreenMinutes" placeholder="mins" min="0" max="59"> m
+      </div>
     </div>
 
-    <button onclick="calculate()">Calculate</button>
+    <!-- Day 3 -->
+    <div class="day-section">
+      <div class="day-header">📅 Day 3</div>
+      <div>
+        <label>Study Time: </label>
+        <input type="number" id="day3StudyHours" placeholder="hrs" min="0"> h
+        <input type="number" id="day3StudyMinutes" placeholder="mins" min="0" max="59"> m
+      </div>
+      <div>
+        <label>Screen Time: </label>
+        <input type="number" id="day3ScreenHours" placeholder="hrs" min="0"> h
+        <input type="number" id="day3ScreenMinutes" placeholder="mins" min="0" max="59"> m
+      </div>
+    </div>
+
+    <button onclick="calculateTotal()">Calculate Total Percentage</button>
+    <button onclick="resetAll()" style="background: #ff6b6b;">Reset All</button>
+
+    <div class="total-stats" id="totalStats"></div>
     <div class="result" id="result"></div>
   </div>
 
   <script>
-    function calculate() {
-      const studyH = parseInt(document.getElementById('studyHours').value) || 0;
-      const studyM = parseInt(document.getElementById('studyMinutes').value) || 0;
-      const screenH = parseInt(document.getElementById('screenHours').value) || 0;
-      const screenM = parseInt(document.getElementById('screenMinutes').value) || 0;
+    function calculateTotal() {
+      // Day 1 calculations
+      const day1StudyH = parseInt(document.getElementById('day1StudyHours').value) || 0;
+      const day1StudyM = parseInt(document.getElementById('day1StudyMinutes').value) || 0;
+      const day1ScreenH = parseInt(document.getElementById('day1ScreenHours').value) || 0;
+      const day1ScreenM = parseInt(document.getElementById('day1ScreenMinutes').value) || 0;
 
-      const studyTotal = studyH * 60 + studyM;
-      const screenTotal = screenH * 60 + screenM;
+      // Day 2 calculations
+      const day2StudyH = parseInt(document.getElementById('day2StudyHours').value) || 0;
+      const day2StudyM = parseInt(document.getElementById('day2StudyMinutes').value) || 0;
+      const day2ScreenH = parseInt(document.getElementById('day2ScreenHours').value) || 0;
+      const day2ScreenM = parseInt(document.getElementById('day2ScreenMinutes').value) || 0;
 
-      if (screenTotal === 0) {
-        document.getElementById('result').innerText = "⚠️ Screen time cannot be 0!";
+      // Day 3 calculations
+      const day3StudyH = parseInt(document.getElementById('day3StudyHours').value) || 0;
+      const day3StudyM = parseInt(document.getElementById('day3StudyMinutes').value) || 0;
+      const day3ScreenH = parseInt(document.getElementById('day3ScreenHours').value) || 0;
+      const day3ScreenM = parseInt(document.getElementById('day3ScreenMinutes').value) || 0;
+
+      // Calculate totals
+      const totalStudyMinutes = (day1StudyH + day2StudyH + day3StudyH) * 60 + 
+                               (day1StudyM + day2StudyM + day3StudyM);
+      
+      const totalScreenMinutes = (day1ScreenH + day2ScreenH + day3ScreenH) * 60 + 
+                                (day1ScreenM + day2ScreenM + day3ScreenM);
+
+      // Convert to hours and minutes
+      const totalStudyHours = Math.floor(totalStudyMinutes / 60);
+      const totalStudyMins = totalStudyMinutes % 60;
+      
+      const totalScreenHours = Math.floor(totalScreenMinutes / 60);
+      const totalScreenMins = totalScreenMinutes % 60;
+
+      // Display total statistics
+      document.getElementById('totalStats').innerHTML = `
+        <strong>📈 Total Summary (3 Days):</strong><br>
+        Total Study Time: ${totalStudyHours}h ${totalStudyMins}m<br>
+        Total Screen Time: ${totalScreenHours}h ${totalScreenMins}m
+      `;
+
+      // Calculate percentage
+      if (totalScreenMinutes === 0) {
+        document.getElementById('result').innerText = "⚠️ Total screen time cannot be 0!";
         return;
       }
 
-      const percentage = (studyTotal / screenTotal) * 100;
-      document.getElementById('result').innerText = `✅ You studied ${percentage.toFixed(2)}% of your screen time.`;
+      const percentage = (totalStudyMinutes / totalScreenMinutes) * 100;
+      
+      // Display result with emoji based on percentage
+      let emoji = "🎯";
+      if (percentage >= 50) emoji = "🎉";
+      if (percentage >= 70) emoji = "🏆";
+      if (percentage < 30) emoji = "💪";
+
+      document.getElementById('result').innerHTML = `
+        ${emoji} <strong>3-Day Result:</strong> You studied <span style="color: #4cafef">${percentage.toFixed(2)}%</span> of your total screen time!
+      `;
+    }
+
+    function resetAll() {
+      // Reset all input fields
+      const inputs = document.querySelectorAll('input[type="number"]');
+      inputs.forEach(input => input.value = '');
+      
+      // Clear results
+      document.getElementById('totalStats').innerHTML = '';
+      document.getElementById('result').innerText = '';
     }
   </script>
 </body>
