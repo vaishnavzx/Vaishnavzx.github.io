@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Study Analytics Pro - Team Dashboard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     :root {
       --primary: #4cc9f0;
@@ -55,6 +57,61 @@
       opacity: 0.9;
     }
     
+    /* Admin Section */
+    .admin-section {
+      background: linear-gradient(135deg, rgba(76, 201, 240, 0.1), rgba(247, 37, 133, 0.1));
+      padding: 20px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 4px solid var(--primary);
+      position: relative;
+    }
+    
+    .admin-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--primary);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8em;
+      font-weight: bold;
+    }
+    
+    .admin-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    .admin-input {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      color: white;
+      width: 100%;
+    }
+    
+    .admin-input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .lock-toggle {
+      background: var(--warning);
+      color: var(--dark);
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9em;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    
     /* Controls */
     .controls {
       display: grid;
@@ -88,6 +145,12 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     }
     
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
     /* Quick Actions */
     .quick-actions {
       display: flex;
@@ -109,29 +172,6 @@
     
     .quick-btn:hover {
       background: rgba(255,255,255,0.2);
-    }
-    
-    /* Goals Section */
-    .goals-section {
-      background: rgba(30, 30, 46, 0.8);
-      padding: 20px;
-      border-radius: 15px;
-      margin: 20px 0;
-      border-left: 4px solid var(--warning);
-    }
-    
-    .goal-inputs {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 15px;
-      margin-top: 15px;
-    }
-    
-    .goal-card {
-      background: rgba(44, 44, 64, 0.6);
-      padding: 15px;
-      border-radius: 10px;
-      text-align: center;
     }
     
     /* Members Grid */
@@ -381,6 +421,36 @@
       border-radius: 15px;
     }
     
+    .export-options {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+    
+    /* Notification */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+      z-index: 1000;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .notification.success { background: var(--success); }
+    .notification.error { background: var(--danger); }
+    .notification.info { background: var(--primary); }
+    
     /* Responsive */
     @media (max-width: 768px) {
       .members-grid {
@@ -389,6 +459,11 @@
       
       .controls {
         grid-template-columns: 1fr;
+      }
+      
+      .export-options {
+        flex-direction: column;
+        align-items: center;
       }
       
       h1 {
@@ -401,34 +476,35 @@
   <div class="container">
     <header>
       <h1>🎯 Study Analytics Pro</h1>
-      <p class="subtitle">Team Performance Dashboard • Smart Insights • Progress Tracking</p>
+      <p class="subtitle">Admin-Controlled Team Dashboard • Advanced Reporting</p>
     </header>
+
+    <!-- Admin Section - Only You Can Modify -->
+    <div class="admin-section">
+      <div class="admin-badge">ADMIN CONTROLS</div>
+      <h3>⚙️ Study Goals & Settings</h3>
+      <div class="admin-controls">
+        <div>
+          <div class="input-label">Minimum Daily Study (hours)</div>
+          <input type="number" id="minStudyGoal" value="4" min="1" max="12" class="admin-input" disabled>
+        </div>
+        <div>
+          <div class="input-label">Target Efficiency (%)</div>
+          <input type="number" id="targetEfficiency" value="50" min="10" max="100" class="admin-input" disabled>
+        </div>
+        <div>
+          <div class="input-label">Team Challenge Goal (%)</div>
+          <input type="number" id="teamGoal" value="55" min="10" max="100" class="admin-input" disabled>
+        </div>
+      </div>
+      <button class="lock-toggle" onclick="toggleAdminLock()">🔓 Unlock to Edit Goals</button>
+    </div>
 
     <!-- Quick Actions -->
     <div class="quick-actions">
       <button class="quick-btn" onclick="fillSampleData()">🎲 Sample Data</button>
       <button class="quick-btn" onclick="quickEntryMode()">⚡ Quick Entry</button>
-      <button class="quick-btn" onclick="setStudyGoals()">🎯 Set Goals</button>
       <button class="quick-btn" onclick="showTutorial()">📚 Tutorial</button>
-    </div>
-
-    <!-- Study Goals -->
-    <div class="goals-section">
-      <h3>🎯 Study Goals & Targets</h3>
-      <div class="goal-inputs">
-        <div class="goal-card">
-          <div class="input-label">Minimum Daily Study (hours)</div>
-          <input type="number" id="minStudyGoal" value="4" min="1" max="12">
-        </div>
-        <div class="goal-card">
-          <div class="input-label">Target Efficiency (%)</div>
-          <input type="number" id="targetEfficiency" value="50" min="10" max="100">
-        </div>
-        <div class="goal-card">
-          <div class="input-label">Team Challenge Goal</div>
-          <input type="number" id="teamGoal" value="55" min="10" max="100">
-        </div>
-      </div>
     </div>
 
     <!-- Main Controls -->
@@ -439,8 +515,8 @@
       <button class="btn btn-success" onclick="saveProgress()">
         <span>💾</span> Save Progress
       </button>
-      <button class="btn btn-secondary" onclick="exportReport()">
-        <span>📊</span> Export Report
+      <button class="btn btn-secondary" onclick="showExportOptions()">
+        <span>📊</span> Export Reports
       </button>
       <button class="btn btn-danger" onclick="resetAll()">
         <span>🔄</span> Reset All
@@ -469,16 +545,32 @@
       <!-- Rankings -->
       <div class="rankings-grid" id="rankingsContainer"></div>
 
-      <!-- Export -->
-      <div class="export-section">
-        <button class="btn btn-warning" onclick="exportReport()">
-          <span>📥</span> Download Comprehensive Report
-        </button>
+      <!-- Export Options -->
+      <div class="export-section" id="exportSection" style="display: none;">
+        <h3>📥 Export Reports</h3>
+        <p>Choose your preferred format:</p>
+        <div class="export-options">
+          <button class="btn btn-warning" onclick="exportToPDF()">
+            <span>📄</span> Download PDF Report
+          </button>
+          <button class="btn btn-success" onclick="exportToCSV()">
+            <span>📊</span> Download CSV Data
+          </button>
+          <button class="btn btn-primary" onclick="exportToImage()">
+            <span>🖼️</span> Save as Image
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Notification -->
+  <div id="notification" class="notification"></div>
+
   <script>
+    // Initialize jsPDF
+    const { jsPDF } = window.jspdf;
+
     const members = [
       { id: 1, name: "ABHINAV AP", color: "#4cc9f0", avatar: "A" },
       { id: 2, name: "VAISHNAV C", color: "#f72585", avatar: "V" },
@@ -489,9 +581,32 @@
       { id: 7, name: "AROMAL AM", color: "#ff6b6b", avatar: "A" }
     ];
 
+    let adminUnlocked = false;
+    let currentResults = null;
+
     // Initialize
     loadMemberCards();
     loadSavedData();
+
+    function toggleAdminLock() {
+      adminUnlocked = !adminUnlocked;
+      const inputs = document.querySelectorAll('.admin-input');
+      const button = document.querySelector('.lock-toggle');
+      
+      inputs.forEach(input => {
+        input.disabled = !adminUnlocked;
+      });
+      
+      if (adminUnlocked) {
+        button.innerHTML = '🔒 Lock Goals';
+        button.style.background = '#ef4444';
+        showNotification('Admin mode unlocked! You can now modify goals.', 'success');
+      } else {
+        button.innerHTML = '🔓 Unlock to Edit Goals';
+        button.style.background = '#fbbf24';
+        showNotification('Admin mode locked. Goals are secure.', 'info');
+      }
+    }
 
     function loadMemberCards() {
       const container = document.getElementById('membersContainer');
@@ -641,6 +756,7 @@
         });
       });
 
+      currentResults = results;
       showResults(results, totalTeamStudy, totalTeamScreen, goalsMet, teamGoal);
       saveProgress();
     }
@@ -648,6 +764,7 @@
     function showResults(results, totalStudy, totalScreen, goalsMet, teamGoal) {
       results.sort((a, b) => b.percentage - a.percentage);
       document.getElementById('resultsSection').style.display = 'block';
+      document.getElementById('exportSection').style.display = 'block';
 
       const teamPercentage = totalScreen > 0 ? (totalStudy / totalScreen * 100) : 0;
       const avgPercentage = results.reduce((sum, r) => sum + r.percentage, 0) / results.length;
@@ -777,7 +894,8 @@
           minStudy: document.getElementById('minStudyGoal').value,
           targetEff: document.getElementById('targetEfficiency').value,
           teamGoal: document.getElementById('teamGoal').value
-        }
+        },
+        adminUnlocked: adminUnlocked
       };
 
       members.forEach(member => {
@@ -808,6 +926,12 @@
           document.getElementById('teamGoal').value = data.goals.teamGoal || 55;
         }
 
+        // Load admin state
+        if (data.adminUnlocked) {
+          adminUnlocked = data.adminUnlocked;
+          toggleAdminLock();
+        }
+
         // Load member data
         if (data.members) {
           members.forEach(member => {
@@ -825,7 +949,61 @@
       }
     }
 
-    function exportReport() {
+    function showExportOptions() {
+      document.getElementById('exportSection').style.display = 'block';
+      document.getElementById('exportSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function exportToPDF() {
+      if (!currentResults) {
+        showNotification('Please calculate results first!', 'error');
+        return;
+      }
+
+      showNotification('Generating PDF report...', 'info');
+      
+      const pdf = new jsPDF();
+      const date = new Date().toLocaleDateString();
+      
+      // Title
+      pdf.setFontSize(20);
+      pdf.setTextColor(76, 201, 240);
+      pdf.text('Study Analytics Pro - Team Report', 20, 30);
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(`Generated on: ${date}`, 20, 40);
+      
+      // Team Summary
+      pdf.setFontSize(16);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text('Team Performance Summary', 20, 60);
+      
+      let yPosition = 80;
+      
+      // Add team statistics
+      pdf.setFontSize(10);
+      currentResults.forEach((result, index) => {
+        if (yPosition > 250) {
+          pdf.addPage();
+          yPosition = 20;
+        }
+        
+        pdf.setTextColor(0, 0, 0);
+        pdf.text(`${index + 1}. ${result.member.name}:`, 20, yPosition);
+        pdf.text(`Efficiency: ${result.percentage.toFixed(1)}%`, 80, yPosition);
+        pdf.text(`Study Time: ${Math.floor(result.study/60)}h ${result.study%60}m`, 130, yPosition);
+        pdf.text(`Rank: #${index + 1}`, 180, yPosition);
+        
+        yPosition += 15;
+      });
+      
+      // Save the PDF
+      pdf.save(`study_report_${date.replace(/\//g, '-')}.pdf`);
+      showNotification('PDF report downloaded successfully!', 'success');
+    }
+
+    function exportToCSV() {
       let csv = 'Member,Day,Study Hours,Study Minutes,Screen Hours,Screen Minutes,Efficiency,Goals Met\n';
       
       members.forEach(member => {
@@ -844,7 +1022,19 @@
       });
 
       downloadCSV(csv, 'study_team_report.csv');
-      showNotification('Report exported successfully!', 'success');
+      showNotification('CSV report downloaded successfully!', 'success');
+    }
+
+    function exportToImage() {
+      showNotification('Generating image...', 'info');
+      
+      html2canvas(document.getElementById('resultsSection')).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'study_dashboard.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showNotification('Dashboard image saved!', 'success');
+      });
     }
 
     function downloadCSV(csv, filename) {
@@ -870,30 +1060,41 @@
           }
         });
         document.getElementById('resultsSection').style.display = 'none';
+        document.getElementById('exportSection').style.display = 'none';
         showNotification('All data has been reset.', 'info');
       }
     }
 
     function showNotification(message, type) {
-      // Simple notification implementation
-      console.log(`[${type.toUpperCase()}] ${message}`);
-    }
-
-    function setStudyGoals() {
-      document.getElementById('minStudyGoal').focus();
-      showNotification('Set your study goals above!', 'info');
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.className = `notification ${type} show`;
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
     }
 
     function showTutorial() {
       alert(`🎯 STUDY TRACKER TUTORIAL:
 
-1. SET GOALS: Adjust minimum study hours and efficiency targets
-2. ENTER DATA: Fill study/screen times for each member (3 days)
-3. CALCULATE: Click "Calculate Analytics" for insights
-4. SAVE: Use "Save Progress" to keep your data
-5. EXPORT: Download reports with "Export Report"
+ADMIN FEATURES (Only You):
+• Click "Unlock to Edit Goals" to modify targets
+• Goals are locked by default for team members
+• Export reports in PDF, CSV, or Image formats
 
-💡 TIP: Use "Quick Entry" to pre-fill common values!`);
+TEAM FEATURES:
+• Enter study/screen times for 3 days
+• Use "Quick Entry" for common values
+• Click "Calculate Analytics" for insights
+• "Save Progress" stores all data automatically
+
+📊 EXPORT OPTIONS:
+• PDF: Professional report with rankings
+• CSV: Raw data for spreadsheets
+• Image: Dashboard screenshot
+
+💡 TIP: Goals are admin-only to maintain consistency!`);
     }
   </script>
 </body>
