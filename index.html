@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Study Tracker - 7 Members, 3 Days</title>
+  <title>Study Tracker - Team Progress</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -138,7 +138,7 @@
 </head>
 <body>
   <div class="container">
-    <h2>👥 Study Tracker - 7 Members (3 Days)</h2>
+    <h2>👥 Study Tracker - Team Progress (3 Days)</h2>
     
     <div class="members-grid" id="membersContainer">
       <!-- Member cards will be generated here -->
@@ -161,13 +161,13 @@
 
   <script>
     const members = [
-      { id: 1, name: "Member 1", color: "#4cafef" },
-      { id: 2, name: "Member 2", color: "#ff6b6b" },
-      { id: 3, name: "Member 3", color: "#6bff6b" },
-      { id: 4, name: "Member 4", color: "#ffd700" },
-      { id: 5, name: "Member 5", color: "#ff6bff" },
-      { id: 6, name: "Member 6", color: "#6bd4ff" },
-      { id: 7, name: "Member 7", color: "#ffa500" }
+      { id: 1, name: "ABHINAV AP", color: "#4cafef" },
+      { id: 2, name: "VAISHNAV C", color: "#ff6b6b" },
+      { id: 3, name: "ALAN JACOB", color: "#6bff6b" },
+      { id: 4, name: "MUHAMMED ZAMEEL U", color: "#ffd700" },
+      { id: 5, name: "JOEL PB", color: "#ff6bff" },
+      { id: 6, name: "JIMIL GEORGE", color: "#6bd4ff" },
+      { id: 7, name: "AROMAL AM", color: "#ffa500" }
     ];
 
     // Generate member cards
@@ -255,8 +255,8 @@
       const top = results[0];
       const lowest = results[results.length - 1];
 
-      topPerformer.innerHTML = `🏆 <strong>Highest:</strong> ${top.member.name} - ${top.percentage.toFixed(2)}% Study Rate`;
-      lowestPerformer.innerHTML = `💪 <strong>Needs Improvement:</strong> ${lowest.member.name} - ${lowest.percentage.toFixed(2)}% Study Rate`;
+      topPerformer.innerHTML = `🏆 <strong>STUDY CHAMPION:</strong> ${top.member.name} - ${top.percentage.toFixed(2)}% Study Rate`;
+      lowestPerformer.innerHTML = `💪 <strong>NEEDS MOTIVATION:</strong> ${lowest.member.name} - ${lowest.percentage.toFixed(2)}% Study Rate`;
 
       // Display all results
       resultsGrid.innerHTML = '';
