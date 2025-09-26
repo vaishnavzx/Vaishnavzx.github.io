@@ -3,104 +3,147 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Study Tracker - Team Analytics</title>
+  <title>Study Analytics Pro - Team Dashboard</title>
   <style>
+    :root {
+      --primary: #4cc9f0;
+      --secondary: #f72585;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --danger: #ef4444;
+      --dark: #1a1a2e;
+      --darker: #16213e;
+    }
+    
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
+    
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
       color: white;
-      padding: 20px;
+      line-height: 1.6;
       min-height: 100vh;
+      padding: 20px;
     }
+    
     .container {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
     }
+    
     header {
       text-align: center;
       margin-bottom: 30px;
+      padding: 20px;
     }
+    
     h1 {
-      color: #4cc9f0;
-      font-size: 2.5em;
+      font-size: 2.8em;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
       margin-bottom: 10px;
-      text-shadow: 0 2px 10px rgba(76, 201, 240, 0.3);
     }
+    
     .subtitle {
       color: #a5b4fc;
-      font-size: 1.1em;
+      font-size: 1.2em;
+      opacity: 0.9;
     }
+    
+    /* Controls */
     .controls {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
       margin: 30px 0;
-      flex-wrap: wrap;
     }
+    
     .btn {
-      padding: 12px 24px;
+      padding: 15px 20px;
       border: none;
-      border-radius: 25px;
-      cursor: pointer;
-      font-size: 14px;
+      border-radius: 12px;
+      font-size: 16px;
       font-weight: 600;
+      cursor: pointer;
       transition: all 0.3s ease;
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, #4cc9f0, #4361ee);
-      color: white;
-    }
-    .btn-success {
-      background: linear-gradient(135deg, #4ade80, #22c55e);
-      color: white;
-    }
-    .btn-warning {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      color: white;
-    }
-    .btn-danger {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-      color: white;
-    }
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
-    .view-toggles {
-      display: flex;
       justify-content: center;
       gap: 10px;
-      margin: 20px 0;
     }
-    .view-btn {
-      padding: 10px 20px;
-      border: 2px solid #4cc9f0;
-      background: transparent;
-      color: #4cc9f0;
-      border-radius: 20px;
+    
+    .btn-primary { background: linear-gradient(135deg, var(--primary), #4361ee); }
+    .btn-success { background: linear-gradient(135deg, var(--success), #22c55e); }
+    .btn-warning { background: linear-gradient(135deg, var(--warning), #d97706); }
+    .btn-danger { background: linear-gradient(135deg, var(--danger), #dc2626); }
+    .btn-secondary { background: linear-gradient(135deg, #a855f7, #7c3aed); }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    
+    /* Quick Actions */
+    .quick-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    
+    .quick-btn {
+      padding: 10px 15px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      color: white;
       cursor: pointer;
       transition: all 0.3s;
     }
-    .view-btn.active {
-      background: #4cc9f0;
-      color: white;
+    
+    .quick-btn:hover {
+      background: rgba(255,255,255,0.2);
     }
+    
+    /* Goals Section */
+    .goals-section {
+      background: rgba(30, 30, 46, 0.8);
+      padding: 20px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border-left: 4px solid var(--warning);
+    }
+    
+    .goal-inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    .goal-card {
+      background: rgba(44, 44, 64, 0.6);
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    
+    /* Members Grid */
     .members-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
       gap: 20px;
-      margin-bottom: 30px;
+      margin: 30px 0;
     }
+    
     .member-card {
-      background: rgba(30, 30, 46, 0.8);
+      background: rgba(30, 30, 46, 0.9);
       padding: 20px;
       border-radius: 15px;
       border-left: 4px solid;
@@ -108,57 +151,68 @@
       box-shadow: 0 8px 32px rgba(0,0,0,0.1);
       transition: transform 0.3s ease;
     }
+    
     .member-card:hover {
       transform: translateY(-5px);
     }
+    
     .member-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 15px;
     }
+    
     .member-name {
       font-weight: bold;
-      font-size: 1.2em;
+      font-size: 1.3em;
     }
+    
     .member-avatar {
-      width: 40px;
-      height: 40px;
+      width: 45px;
+      height: 45px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      font-size: 1.1em;
+      font-size: 1.2em;
     }
+    
     .day-section {
       background: rgba(44, 44, 64, 0.6);
       padding: 15px;
       border-radius: 10px;
-      margin: 10px 0;
+      margin: 12px 0;
     }
+    
     .day-header {
-      color: #fbbf24;
+      color: var(--warning);
       font-weight: bold;
       margin-bottom: 10px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
+    
     .input-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
+    
     .input-group {
       display: flex;
       flex-direction: column;
       gap: 5px;
     }
+    
     .input-label {
-      font-size: 0.8em;
+      font-size: 0.85em;
       color: #a5b4fc;
+      font-weight: 500;
     }
+    
     input {
       padding: 10px;
       border: 1px solid #4b5563;
@@ -168,168 +222,258 @@
       text-align: center;
       transition: border-color 0.3s;
     }
+    
     input:focus {
-      border-color: #4cc9f0;
+      border-color: var(--primary);
       outline: none;
+      box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.1);
     }
+    
+    /* Results Section */
     .results-section {
       background: rgba(30, 30, 46, 0.9);
       padding: 30px;
       border-radius: 20px;
       margin-top: 40px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     }
+    
     .results-header {
       text-align: center;
       margin-bottom: 30px;
     }
+    
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 20px;
       margin: 30px 0;
     }
+    
     .stat-card {
       background: linear-gradient(135deg, #4361ee, #3a0ca3);
       padding: 20px;
       border-radius: 15px;
       text-align: center;
+      transition: transform 0.3s;
     }
+    
+    .stat-card:hover {
+      transform: scale(1.05);
+    }
+    
     .stat-value {
-      font-size: 2em;
+      font-size: 2.2em;
       font-weight: bold;
       margin: 10px 0;
     }
+    
+    /* Rankings */
     .rankings-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 20px;
       margin: 30px 0;
     }
+    
     .ranking-card {
       background: rgba(44, 44, 64, 0.8);
       padding: 20px;
       border-radius: 15px;
       text-align: center;
-      transition: transform 0.3s;
+      transition: all 0.3s;
       border: 2px solid transparent;
     }
+    
     .ranking-card:hover {
-      transform: scale(1.02);
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
     }
+    
     .rank-1 {
-      border-color: #fbbf24;
-      background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(44, 44, 64, 0.8));
+      border-color: var(--warning);
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(44, 44, 64, 0.9));
       position: relative;
     }
+    
     .rank-1::before {
       content: "👑";
       position: absolute;
-      top: -15px;
+      top: -20px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 2em;
-    }
-    .percentage {
       font-size: 2.5em;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+    }
+    
+    .rank-last {
+      border-color: var(--danger);
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(44, 44, 64, 0.9));
+    }
+    
+    .percentage {
+      font-size: 2.8em;
       font-weight: bold;
       margin: 15px 0;
-      background: linear-gradient(135deg, #4cc9f0, #f72585);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+    
     .progress-bar {
       width: 100%;
-      height: 8px;
+      height: 10px;
       background: #374151;
       border-radius: 10px;
-      margin: 10px 0;
+      margin: 15px 0;
       overflow: hidden;
     }
+    
     .progress-fill {
       height: 100%;
       border-radius: 10px;
-      transition: width 0.5s ease;
+      transition: width 0.8s ease;
+      background: linear-gradient(90deg, var(--primary), var(--success));
     }
+    
+    /* Achievements */
     .achievements {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
       justify-content: center;
-      margin: 20px 0;
+      margin: 25px 0;
     }
+    
     .badge {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      padding: 8px 15px;
-      border-radius: 20px;
-      font-size: 0.8em;
+      background: linear-gradient(135deg, var(--warning), var(--danger));
+      padding: 10px 18px;
+      border-radius: 25px;
+      font-size: 0.9em;
       font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .daily-breakdown {
-      margin: 30px 0;
+    
+    /* Recommendations */
+    .recommendations {
+      background: linear-gradient(135deg, rgba(76, 201, 240, 0.1), rgba(247, 37, 133, 0.1));
+      padding: 20px;
+      border-radius: 15px;
+      margin: 25px 0;
+      border-left: 4px solid var(--primary);
     }
-    .day-results {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-top: 15px;
+    
+    .recommendation {
+      margin: 10px 0;
+      padding: 10px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
     }
-    .day-result-card {
-      background: rgba(44, 44, 64, 0.6);
-      padding: 15px;
-      border-radius: 10px;
+    
+    /* Export Section */
+    .export-section {
       text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      background: rgba(44, 44, 64, 0.6);
+      border-radius: 15px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .members-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .controls {
+        grid-template-columns: 1fr;
+      }
+      
+      h1 {
+        font-size: 2.2em;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>📊 Study Analytics Pro</h1>
-      <p class="subtitle">Track your team's learning journey • 7 Members • 3 Days</p>
+      <h1>🎯 Study Analytics Pro</h1>
+      <p class="subtitle">Team Performance Dashboard • Smart Insights • Progress Tracking</p>
     </header>
 
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <button class="quick-btn" onclick="fillSampleData()">🎲 Sample Data</button>
+      <button class="quick-btn" onclick="quickEntryMode()">⚡ Quick Entry</button>
+      <button class="quick-btn" onclick="setStudyGoals()">🎯 Set Goals</button>
+      <button class="quick-btn" onclick="showTutorial()">📚 Tutorial</button>
+    </div>
+
+    <!-- Study Goals -->
+    <div class="goals-section">
+      <h3>🎯 Study Goals & Targets</h3>
+      <div class="goal-inputs">
+        <div class="goal-card">
+          <div class="input-label">Minimum Daily Study (hours)</div>
+          <input type="number" id="minStudyGoal" value="4" min="1" max="12">
+        </div>
+        <div class="goal-card">
+          <div class="input-label">Target Efficiency (%)</div>
+          <input type="number" id="targetEfficiency" value="50" min="10" max="100">
+        </div>
+        <div class="goal-card">
+          <div class="input-label">Team Challenge Goal</div>
+          <input type="number" id="teamGoal" value="55" min="10" max="100">
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Controls -->
     <div class="controls">
-      <button class="btn btn-primary" onclick="fillSampleData()">
-        <span>🎲</span> Fill Sample Data
-      </button>
-      <button class="btn btn-success" onclick="calculateResults()">
+      <button class="btn btn-primary" onclick="calculateResults()">
         <span>📈</span> Calculate Analytics
       </button>
-      <button class="btn btn-warning" onclick="saveProgress()">
+      <button class="btn btn-success" onclick="saveProgress()">
         <span>💾</span> Save Progress
+      </button>
+      <button class="btn btn-secondary" onclick="exportReport()">
+        <span>📊</span> Export Report
       </button>
       <button class="btn btn-danger" onclick="resetAll()">
         <span>🔄</span> Reset All
       </button>
     </div>
 
-    <div class="view-toggles">
-      <button class="view-btn active" onclick="switchView('input')">📝 Input Data</button>
-      <button class="view-btn" onclick="switchView('results')">📊 View Results</button>
-    </div>
+    <!-- Members Input -->
+    <div class="members-grid" id="membersContainer"></div>
 
-    <div id="inputView">
-      <div class="members-grid" id="membersContainer"></div>
-    </div>
+    <!-- Results Section -->
+    <div class="results-section" id="resultsSection" style="display: none;">
+      <div class="results-header">
+        <h2>🏆 Team Performance Dashboard</h2>
+        <p>Comprehensive analysis based on 3 days of tracking</p>
+      </div>
 
-    <div id="resultsView" style="display: none;">
-      <div class="results-section">
-        <div class="results-header">
-          <h2>🏆 Team Performance Dashboard</h2>
-          <p>Analysis based on 3 days of study data</p>
-        </div>
+      <!-- Team Stats -->
+      <div class="stats-grid" id="teamStats"></div>
 
-        <div class="stats-grid" id="teamStats"></div>
+      <!-- Achievements -->
+      <div class="achievements" id="achievementsContainer"></div>
 
-        <div class="daily-breakdown">
-          <h3>📅 Daily Performance</h3>
-          <div class="day-results" id="dailyResults"></div>
-        </div>
+      <!-- Recommendations -->
+      <div class="recommendations" id="recommendationsContainer"></div>
 
-        <div class="achievements" id="achievementsContainer"></div>
+      <!-- Rankings -->
+      <div class="rankings-grid" id="rankingsContainer"></div>
 
-        <div class="rankings-grid" id="rankingsContainer"></div>
+      <!-- Export -->
+      <div class="export-section">
+        <button class="btn btn-warning" onclick="exportReport()">
+          <span>📥</span> Download Comprehensive Report
+        </button>
       </div>
     </div>
   </div>
@@ -345,10 +489,9 @@
       { id: 7, name: "AROMAL AM", color: "#ff6b6b", avatar: "A" }
     ];
 
-    const studyGoals = {
-      minimum: 4 * 60,  // 4 hours
-      target: 6 * 60    // 6 hours
-    };
+    // Initialize
+    loadMemberCards();
+    loadSavedData();
 
     function loadMemberCards() {
       const container = document.getElementById('membersContainer');
@@ -370,23 +513,28 @@
               <div class="day-section">
                 <div class="day-header">
                   <span>📅 Day ${day}</span>
+                  <span style="font-size: 0.8em; opacity: 0.7;" id="m${member.id}d${day}Status"></span>
                 </div>
                 <div class="input-grid">
                   <div class="input-group">
-                    <div class="input-label">Study Hours</div>
-                    <input type="number" id="m${member.id}d${day}StudyH" placeholder="0" min="0">
+                    <div class="input-label">📚 Study Hours</div>
+                    <input type="number" id="m${member.id}d${day}StudyH" placeholder="0" min="0" 
+                           onchange="updateDayStatus(${member.id}, ${day})">
                   </div>
                   <div class="input-group">
                     <div class="input-label">Study Minutes</div>
-                    <input type="number" id="m${member.id}d${day}StudyM" placeholder="0" min="0" max="59">
+                    <input type="number" id="m${member.id}d${day}StudyM" placeholder="0" min="0" max="59"
+                           onchange="updateDayStatus(${member.id}, ${day})">
                   </div>
                   <div class="input-group">
-                    <div class="input-label">Screen Hours</div>
-                    <input type="number" id="m${member.id}d${day}ScreenH" placeholder="0" min="0">
+                    <div class="input-label">📱 Screen Hours</div>
+                    <input type="number" id="m${member.id}d${day}ScreenH" placeholder="0" min="0"
+                           onchange="updateDayStatus(${member.id}, ${day})">
                   </div>
                   <div class="input-group">
                     <div class="input-label">Screen Minutes</div>
-                    <input type="number" id="m${member.id}d${day}ScreenM" placeholder="0" min="0" max="59">
+                    <input type="number" id="m${member.id}d${day}ScreenM" placeholder="0" min="0" max="59"
+                           onchange="updateDayStatus(${member.id}, ${day})">
                   </div>
                 </div>
               </div>
@@ -395,16 +543,25 @@
         `;
         container.innerHTML += card;
       });
-
-      loadSavedData();
     }
 
-    function switchView(view) {
-      document.getElementById('inputView').style.display = view === 'input' ? 'block' : 'none';
-      document.getElementById('resultsView').style.display = view === 'results' ? 'block' : 'none';
+    function updateDayStatus(memberId, day) {
+      const studyH = parseInt(document.getElementById(`m${memberId}d${day}StudyH`).value) || 0;
+      const studyM = parseInt(document.getElementById(`m${memberId}d${day}StudyM`).value) || 0;
+      const screenH = parseInt(document.getElementById(`m${memberId}d${day}ScreenH`).value) || 0;
+      const screenM = parseInt(document.getElementById(`m${memberId}d${day}ScreenM`).value) || 0;
       
-      document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      const totalStudy = studyH * 60 + studyM;
+      const totalScreen = screenH * 60 + screenM;
+      const percentage = totalScreen > 0 ? (totalStudy / totalScreen * 100) : 0;
+      
+      const statusEl = document.getElementById(`m${memberId}d${day}Status`);
+      if (totalStudy > 0 || totalScreen > 0) {
+        statusEl.textContent = `✓ ${percentage.toFixed(0)}%`;
+        statusEl.style.color = percentage >= 40 ? '#4ade80' : '#fbbf24';
+      } else {
+        statusEl.textContent = '';
+      }
     }
 
     function fillSampleData() {
@@ -414,17 +571,37 @@
           document.getElementById(`m${member.id}d${day}StudyM`).value = Math.floor(Math.random() * 60);
           document.getElementById(`m${member.id}d${day}ScreenH`).value = Math.floor(Math.random() * 6) + 4;
           document.getElementById(`m${member.id}d${day}ScreenM`).value = Math.floor(Math.random() * 60);
+          updateDayStatus(member.id, day);
         }
       });
-      saveProgress();
+      showNotification('Sample data filled! Click "Calculate Analytics" to see results.', 'success');
+    }
+
+    function quickEntryMode() {
+      members.forEach(member => {
+        for (let day = 1; day <= 3; day++) {
+          if (!document.getElementById(`m${member.id}d${day}StudyH`).value) {
+            document.getElementById(`m${member.id}d${day}StudyH`).value = 4;
+            document.getElementById(`m${member.id}d${day}StudyM`).value = 30;
+            document.getElementById(`m${member.id}d${day}ScreenH`).value = 6;
+            document.getElementById(`m${member.id}d${day}ScreenM`).value = 0;
+            updateDayStatus(member.id, day);
+          }
+        }
+      });
+      showNotification('Quick entry completed! Modify values as needed.', 'info');
     }
 
     function calculateResults() {
       const results = [];
+      const minStudyGoal = (parseInt(document.getElementById('minStudyGoal').value) || 4) * 60;
+      const targetEfficiency = parseInt(document.getElementById('targetEfficiency').value) || 50;
+      const teamGoal = parseInt(document.getElementById('teamGoal').value) || 55;
+
       let totalTeamStudy = 0;
       let totalTeamScreen = 0;
+      let goalsMet = 0;
 
-      // Calculate individual results
       members.forEach(member => {
         let totalStudy = 0;
         let totalScreen = 0;
@@ -440,13 +617,7 @@
           const dayScreen = screenH * 60 + screenM;
           const dayPercentage = dayScreen > 0 ? (dayStudy / dayScreen * 100) : 0;
 
-          dailyData.push({
-            day: day,
-            study: dayStudy,
-            screen: dayScreen,
-            percentage: dayPercentage
-          });
-
+          dailyData.push({ day, study: dayStudy, screen: dayScreen, percentage: dayPercentage });
           totalStudy += dayStudy;
           totalScreen += dayScreen;
         }
@@ -455,34 +626,38 @@
         totalTeamScreen += totalScreen;
 
         const percentage = totalScreen > 0 ? (totalStudy / totalScreen * 100) : 0;
-        
+        const avgDailyStudy = totalStudy / 3;
+        const metGoal = avgDailyStudy >= minStudyGoal && percentage >= targetEfficiency;
+        if (metGoal) goalsMet++;
+
         results.push({
-          member: member,
+          member,
           study: totalStudy,
           screen: totalScreen,
-          percentage: percentage,
-          dailyData: dailyData
+          percentage,
+          dailyData,
+          metGoal,
+          avgDailyStudy
         });
       });
 
-      showResults(results, totalTeamStudy, totalTeamScreen);
-      switchView('results');
+      showResults(results, totalTeamStudy, totalTeamScreen, goalsMet, teamGoal);
       saveProgress();
     }
 
-    function showResults(results, totalStudy, totalScreen) {
-      // Sort by percentage
+    function showResults(results, totalStudy, totalScreen, goalsMet, teamGoal) {
       results.sort((a, b) => b.percentage - a.percentage);
+      document.getElementById('resultsSection').style.display = 'block';
 
-      // Team statistics
       const teamPercentage = totalScreen > 0 ? (totalStudy / totalScreen * 100) : 0;
       const avgPercentage = results.reduce((sum, r) => sum + r.percentage, 0) / results.length;
 
+      // Team Stats
       document.getElementById('teamStats').innerHTML = `
         <div class="stat-card">
           <div>🏆 Team Average</div>
           <div class="stat-value">${avgPercentage.toFixed(1)}%</div>
-          <div>Overall Performance</div>
+          <div>${teamPercentage >= teamGoal ? '🎯 Goal Achieved!' : `📈 ${(teamGoal - teamPercentage).toFixed(1)}% to go`}</div>
         </div>
         <div class="stat-card">
           <div>📚 Total Study</div>
@@ -490,86 +665,125 @@
           <div>${totalStudy % 60}m across team</div>
         </div>
         <div class="stat-card">
-          <div>📱 Total Screen</div>
-          <div class="stat-value">${Math.floor(totalScreen / 60)}h</div>
-          <div>${totalScreen % 60}m across team</div>
+          <div>✅ Goals Met</div>
+          <div class="stat-value">${goalsMet}/7</div>
+          <div>${Math.round((goalsMet/7)*100)}% success rate</div>
         </div>
         <div class="stat-card">
           <div>⚡ Efficiency</div>
           <div class="stat-value">${teamPercentage.toFixed(1)}%</div>
-          <div>Team Ratio</div>
+          <div>Team performance ratio</div>
         </div>
       `;
 
-      // Daily breakdown
-      const dailyResults = document.getElementById('dailyResults');
-      dailyResults.innerHTML = members.map(member => {
-        const result = results.find(r => r.member.id === member.id);
-        return `
-          <div class="day-result-card">
-            <div style="color: ${member.color}; font-weight: bold;">${member.name}</div>
-            ${result.dailyData.map(day => `
-              <div style="margin: 5px 0; font-size: 0.9em;">
-                Day ${day.day}: ${day.percentage.toFixed(1)}%
-              </div>
-            `).join('')}
-          </div>
-        `;
-      }).join('');
-
       // Achievements
-      const achievements = calculateAchievements(results);
+      const achievements = calculateAchievements(results, teamPercentage, teamGoal);
       document.getElementById('achievementsContainer').innerHTML = achievements.map(ach => `
         <div class="badge">${ach}</div>
       `).join('');
 
+      // Recommendations
+      document.getElementById('recommendationsContainer').innerHTML = `
+        <h3>💡 Smart Recommendations</h3>
+        ${generateRecommendations(results)}
+      `;
+
       // Rankings
-      const rankingsContainer = document.getElementById('rankingsContainer');
-      rankingsContainer.innerHTML = results.map((result, index) => {
+      document.getElementById('rankingsContainer').innerHTML = results.map((result, index) => {
         const rank = index + 1;
         const studyH = Math.floor(result.study / 60);
         const studyM = result.study % 60;
-        const screenH = Math.floor(result.screen / 60);
-        const screenM = result.screen % 60;
+        const productivityScore = calculateProductivityScore(result);
 
         return `
-          <div class="ranking-card ${rank === 1 ? 'rank-1' : ''}">
-            <div style="color: ${result.member.color}; font-weight: bold; font-size: 1.1em;">
+          <div class="ranking-card ${rank === 1 ? 'rank-1' : rank === results.length ? 'rank-last' : ''}">
+            <div style="color: ${result.member.color}; font-weight: bold; font-size: 1.2em;">
               ${result.member.name}
             </div>
             <div class="percentage">${result.percentage.toFixed(1)}%</div>
-            <div>📚 ${studyH}h ${studyM}m study</div>
-            <div>📱 ${screenH}h ${screenM}m screen</div>
+            <div>📚 ${studyH}h ${studyM}m total study</div>
+            <div>⭐ Productivity: ${productivityScore}/100</div>
             <div class="progress-bar">
-              <div class="progress-fill" style="width: ${Math.min(result.percentage, 100)}%; background: ${result.member.color};"></div>
+              <div class="progress-fill" style="width: ${Math.min(result.percentage, 100)}%;"></div>
             </div>
-            <div style="margin-top: 10px; font-weight: bold; font-size: 1.1em;">
-              Rank: #${rank} ${rank === 1 ? '👑' : ''}
+            <div style="margin-top: 15px; font-weight: bold; font-size: 1.1em;">
+              Rank: #${rank} ${rank === 1 ? '👑' : result.metGoal ? '✅' : '💪'}
             </div>
+            ${result.metGoal ? '<div style="color: #4ade80; margin-top: 5px;">✅ Goals Achieved</div>' : 
+              `<div style="color: #fbbf24; margin-top: 5px;">🎯 ${(minStudyGoal/60 - result.avgDailyStudy/60).toFixed(1)}h more needed</div>`}
           </div>
         `;
       }).join('');
+
+      document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
     }
 
-    function calculateAchievements(results) {
+    function calculateAchievements(results, teamPercentage, teamGoal) {
       const achievements = [];
       const top = results[0];
-      const consistent = results.filter(r => r.percentage > 40).length;
 
       if (top.percentage > 60) achievements.push("👑 Study Champion");
-      if (consistent >= 5) achievements.push("📚 Consistent Team");
-      if (results.every(r => r.study >= studyGoals.minimum)) achievements.push("⚡ All Goals Met");
+      if (results.filter(r => r.metGoal).length >= 5) achievements.push("📚 Consistent Team");
+      if (teamPercentage >= teamGoal) achievements.push("🏆 Team Goal Achieved");
+      if (results.every(r => r.percentage > 30)) achievements.push("⚡ Balanced Team");
       if (top.percentage > 70) achievements.push("🎯 Productivity Master");
+      if (results.filter(r => r.percentage > 45).length >= 4) achievements.push("🌟 High Performers");
 
       return achievements;
     }
 
+    function generateRecommendations(results) {
+      const recommendations = [];
+      const lowPerformers = results.filter(r => r.percentage < 40);
+      const highPerformers = results.filter(r => r.percentage > 60);
+
+      if (lowPerformers.length > 0) {
+        lowPerformers.forEach(member => {
+          const needed = Math.max(0, 40 - member.percentage);
+          recommendations.push(
+            `<div class="recommendation">💡 <strong>${member.member.name}:</strong> Focus on reducing screen time by ${(needed/100 * member.screen/60).toFixed(1)} hours to reach 40% efficiency</div>`
+          );
+        });
+      }
+
+      if (highPerformers.length > 0) {
+        recommendations.push(
+          `<div class="recommendation">🌟 <strong>High performers:</strong> ${highPerformers.map(m => m.member.name).join(', ')} are setting great examples!</div>`
+        );
+      }
+
+      const avgStudy = results.reduce((sum, r) => sum + r.study, 0) / results.length / 60 / 3;
+      if (avgStudy < 4) {
+        recommendations.push(
+          `<div class="recommendation">🎯 <strong>Team:</strong> Try increasing daily study time by ${(4 - avgStudy).toFixed(1)} hours per person</div>`
+        );
+      }
+
+      return recommendations.join('');
+    }
+
+    function calculateProductivityScore(result) {
+      const efficiencyScore = Math.min(result.percentage, 100);
+      const consistencyScore = result.dailyData.filter(d => d.percentage > 30).length * 25;
+      const goalBonus = result.metGoal ? 20 : 0;
+      
+      return Math.min(efficiencyScore + consistencyScore + goalBonus, 100);
+    }
+
     function saveProgress() {
-      const data = {};
+      const data = {
+        members: {},
+        goals: {
+          minStudy: document.getElementById('minStudyGoal').value,
+          targetEff: document.getElementById('targetEfficiency').value,
+          teamGoal: document.getElementById('teamGoal').value
+        }
+      };
+
       members.forEach(member => {
-        data[member.id] = {};
+        data.members[member.id] = {};
         for (let day = 1; day <= 3; day++) {
-          data[member.id][day] = {
+          data.members[member.id][day] = {
             studyH: document.getElementById(`m${member.id}d${day}StudyH`).value,
             studyM: document.getElementById(`m${member.id}d${day}StudyM`).value,
             screenH: document.getElementById(`m${member.id}d${day}ScreenH`).value,
@@ -577,39 +791,110 @@
           };
         }
       });
+
       localStorage.setItem('studyTeamData', JSON.stringify(data));
+      showNotification('Progress saved successfully!', 'success');
     }
 
     function loadSavedData() {
       const saved = localStorage.getItem('studyTeamData');
       if (saved) {
         const data = JSON.parse(saved);
-        members.forEach(member => {
-          for (let day = 1; day <= 3; day++) {
-            if (data[member.id] && data[member.id][day]) {
-              document.getElementById(`m${member.id}d${day}StudyH`).value = data[member.id][day].studyH;
-              document.getElementById(`m${member.id}d${day}StudyM`).value = data[member.id][day].studyM;
-              document.getElementById(`m${member.id}d${day}ScreenH`).value = data[member.id][day].screenH;
-              document.getElementById(`m${member.id}d${day}ScreenM`).value = data[member.id][day].screenM;
+        
+        // Load goals
+        if (data.goals) {
+          document.getElementById('minStudyGoal').value = data.goals.minStudy || 4;
+          document.getElementById('targetEfficiency').value = data.goals.targetEff || 50;
+          document.getElementById('teamGoal').value = data.goals.teamGoal || 55;
+        }
+
+        // Load member data
+        if (data.members) {
+          members.forEach(member => {
+            for (let day = 1; day <= 3; day++) {
+              if (data.members[member.id] && data.members[member.id][day]) {
+                document.getElementById(`m${member.id}d${day}StudyH`).value = data.members[member.id][day].studyH;
+                document.getElementById(`m${member.id}d${day}StudyM`).value = data.members[member.id][day].studyM;
+                document.getElementById(`m${member.id}d${day}ScreenH`).value = data.members[member.id][day].screenH;
+                document.getElementById(`m${member.id}d${day}ScreenM`).value = data.members[member.id][day].screenM;
+                updateDayStatus(member.id, day);
+              }
             }
-          }
-        });
+          });
+        }
       }
+    }
+
+    function exportReport() {
+      let csv = 'Member,Day,Study Hours,Study Minutes,Screen Hours,Screen Minutes,Efficiency,Goals Met\n';
+      
+      members.forEach(member => {
+        for (let day = 1; day <= 3; day++) {
+          const studyH = document.getElementById(`m${member.id}d${day}StudyH`).value || 0;
+          const studyM = document.getElementById(`m${member.id}d${day}StudyM`).value || 0;
+          const screenH = document.getElementById(`m${member.id}d${day}ScreenH`).value || 0;
+          const screenM = document.getElementById(`m${member.id}d${day}ScreenM`).value || 0;
+          
+          const studyTotal = (parseInt(studyH) || 0) * 60 + (parseInt(studyM) || 0);
+          const screenTotal = (parseInt(screenH) || 0) * 60 + (parseInt(screenM) || 0);
+          const percentage = screenTotal > 0 ? (studyTotal / screenTotal * 100) : 0;
+          
+          csv += `${member.name},Day ${day},${studyH},${studyM},${screenH},${screenM},${percentage.toFixed(2)}%,\n`;
+        }
+      });
+
+      downloadCSV(csv, 'study_team_report.csv');
+      showNotification('Report exported successfully!', 'success');
+    }
+
+    function downloadCSV(csv, filename) {
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      window.URL.revokeObjectURL(url);
     }
 
     function resetAll() {
-      if (confirm('Are you sure you want to reset all data?')) {
+      if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
         localStorage.removeItem('studyTeamData');
-        const inputs = document.querySelectorAll('input');
-        inputs.forEach(input => input.value = '');
-        document.getElementById('achievementsContainer').innerHTML = '';
-        document.getElementById('rankingsContainer').innerHTML = '';
-        switchView('input');
+        members.forEach(member => {
+          for (let day = 1; day <= 3; day++) {
+            document.getElementById(`m${member.id}d${day}StudyH`).value = '';
+            document.getElementById(`m${member.id}d${day}StudyM`).value = '';
+            document.getElementById(`m${member.id}d${day}ScreenH`).value = '';
+            document.getElementById(`m${member.id}d${day}ScreenM`).value = '';
+            updateDayStatus(member.id, day);
+          }
+        });
+        document.getElementById('resultsSection').style.display = 'none';
+        showNotification('All data has been reset.', 'info');
       }
     }
 
-    // Initialize
-    loadMemberCards();
+    function showNotification(message, type) {
+      // Simple notification implementation
+      console.log(`[${type.toUpperCase()}] ${message}`);
+    }
+
+    function setStudyGoals() {
+      document.getElementById('minStudyGoal').focus();
+      showNotification('Set your study goals above!', 'info');
+    }
+
+    function showTutorial() {
+      alert(`🎯 STUDY TRACKER TUTORIAL:
+
+1. SET GOALS: Adjust minimum study hours and efficiency targets
+2. ENTER DATA: Fill study/screen times for each member (3 days)
+3. CALCULATE: Click "Calculate Analytics" for insights
+4. SAVE: Use "Save Progress" to keep your data
+5. EXPORT: Download reports with "Export Report"
+
+💡 TIP: Use "Quick Entry" to pre-fill common values!`);
+    }
   </script>
 </body>
 </html>
