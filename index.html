@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Study Analytics Pro - Team Dashboard</title>
+  <title>Study Analytics Pro - Ultimate Dashboard</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
   <style>
     :root {
       --primary: #4cc9f0;
@@ -15,6 +16,7 @@
       --danger: #ef4444;
       --dark: #1a1a2e;
       --darker: #16213e;
+      --light: #f8fafc;
     }
     
     * {
@@ -30,6 +32,12 @@
       line-height: 1.6;
       min-height: 100vh;
       padding: 20px;
+      transition: all 0.3s ease;
+    }
+    
+    body.light-mode {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
     }
     
     .container {
@@ -41,6 +49,7 @@
       text-align: center;
       margin-bottom: 30px;
       padding: 20px;
+      position: relative;
     }
     
     h1 {
@@ -49,6 +58,7 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 10px;
+      animation: floatSlow 6s ease-in-out infinite;
     }
     
     .subtitle {
@@ -57,27 +67,120 @@
       opacity: 0.9;
     }
     
-    /* Admin Section */
-    .admin-section {
-      background: linear-gradient(135deg, rgba(76, 201, 240, 0.1), rgba(247, 37, 133, 0.1));
-      padding: 20px;
-      border-radius: 15px;
-      margin: 20px 0;
-      border-left: 4px solid var(--primary);
-      position: relative;
+    .light-mode .subtitle {
+      color: #4b5563;
     }
     
-    .admin-badge {
+    /* Theme Toggle */
+    .theme-toggle {
       position: absolute;
-      top: 10px;
-      right: 10px;
+      top: 20px;
+      right: 20px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5em;
+      transition: all 0.3s;
+    }
+    
+    .theme-toggle:hover {
+      transform: rotate(30deg);
+      background: rgba(255,255,255,0.2);
+    }
+    
+    /* View Toggles */
+    .view-toggles {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    
+    .view-btn {
+      padding: 10px 20px;
+      border: 2px solid var(--primary);
+      background: transparent;
+      color: var(--primary);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .view-btn.active {
       background: var(--primary);
       color: white;
-      padding: 5px 10px;
-      border-radius: 20px;
-      font-size: 0.8em;
-      font-weight: bold;
     }
+    
+/* Admin Section - Fixed for Mobile */
+.admin-section {
+  background: linear-gradient(135deg, rgba(76, 201, 240, 0.1), rgba(247, 37, 133, 0.1));
+  padding: 20px;
+  border-radius: 15px;
+  margin: 20px 0;
+  border-left: 4px solid var(--primary);
+  position: relative;
+  padding-top: 60px; /* Add space at top for the badge */
+}
+
+.light-mode .admin-section {
+  background: linear-gradient(135deg, rgba(76, 201, 240, 0.15), rgba(247, 37, 133, 0.15));
+}
+
+.admin-badge {
+  position: absolute;
+  top: 15px; /* Reduced from 10px */
+  right: 15px; /* Reduced from 10px */
+  background: var(--primary);
+  color: white;
+  padding: 8px 12px; /* Slightly larger padding */
+  border-radius: 20px;
+  font-size: 0.75em; /* Smaller font size */
+  font-weight: bold;
+  max-width: 140px; /* Limit width */
+  text-align: center;
+  line-height: 1.2;
+  word-wrap: break-word;
+}
+
+/* Mobile-specific fix */
+@media (max-width: 768px) {
+  .admin-section {
+    padding-top: 70px; /* Even more space on mobile */
+  }
+  
+  .admin-badge {
+    top: 12px;
+    right: 12px;
+    font-size: 0.7em; /* Even smaller on mobile */
+    padding: 6px 10px;
+    max-width: 120px;
+  }
+  
+  .admin-section h3 {
+    font-size: 1.1em; /* Slightly smaller heading on mobile */
+    margin-right: 130px; /* Make space for the badge */
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-badge {
+    font-size: 0.65em;
+    max-width: 110px;
+    padding: 5px 8px;
+  }
+  
+  .admin-section h3 {
+    margin-right: 120px;
+    font-size: 1em;
+  }
+}
     
     .admin-controls {
       display: grid;
@@ -93,6 +196,12 @@
       padding: 12px;
       color: white;
       width: 100%;
+    }
+    
+    .light-mode .admin-input {
+      background: rgba(255, 255, 255, 0.8);
+      color: #333;
+      border: 1px solid #ddd;
     }
     
     .admin-input:disabled {
@@ -132,6 +241,8 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
+      position: relative;
+      overflow: hidden;
     }
     
     .btn-primary { background: linear-gradient(135deg, var(--primary), #4361ee); }
@@ -170,8 +281,18 @@
       transition: all 0.3s;
     }
     
+    .light-mode .quick-btn {
+      background: rgba(255,255,255,0.8);
+      color: #333;
+      border: 1px solid #ddd;
+    }
+    
     .quick-btn:hover {
       background: rgba(255,255,255,0.2);
+    }
+    
+    .light-mode .quick-btn:hover {
+      background: rgba(255,255,255,1);
     }
     
     /* Members Grid */
@@ -190,6 +311,14 @@
       backdrop-filter: blur(10px);
       box-shadow: 0 8px 32px rgba(0,0,0,0.1);
       transition: transform 0.3s ease;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: slideUp 600ms cubic-bezier(.2,.9,.2,1) var(--delay, 0s) forwards;
+    }
+    
+    .light-mode .member-card {
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
     }
     
     .member-card:hover {
@@ -217,6 +346,7 @@
       justify-content: center;
       font-weight: bold;
       font-size: 1.2em;
+      animation: pulse 3.5s ease-in-out infinite;
     }
     
     .day-section {
@@ -224,6 +354,10 @@
       padding: 15px;
       border-radius: 10px;
       margin: 12px 0;
+    }
+    
+    .light-mode .day-section {
+      background: rgba(255, 255, 255, 0.6);
     }
     
     .day-header {
@@ -253,6 +387,10 @@
       font-weight: 500;
     }
     
+    .light-mode .input-label {
+      color: #4b5563;
+    }
+    
     input {
       padding: 10px;
       border: 1px solid #4b5563;
@@ -261,6 +399,12 @@
       color: white;
       text-align: center;
       transition: border-color 0.3s;
+    }
+    
+    .light-mode input {
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      border: 1px solid #ddd;
     }
     
     input:focus {
@@ -276,6 +420,10 @@
       border-radius: 20px;
       margin-top: 40px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .light-mode .results-section {
+      background: rgba(255, 255, 255, 0.9);
     }
     
     .results-header {
@@ -296,6 +444,14 @@
       border-radius: 15px;
       text-align: center;
       transition: transform 0.3s;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 420ms cubic-bezier(.2,.9,.2,1);
+    }
+    
+    .stat-card.show {
+      opacity: 1;
+      transform: translateY(0);
     }
     
     .stat-card:hover {
@@ -306,6 +462,56 @@
       font-size: 2.2em;
       font-weight: bold;
       margin: 10px 0;
+    }
+    
+    /* Charts Section */
+    .charts-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
+    
+    .chart-container {
+      background: rgba(44, 44, 64, 0.6);
+      padding: 20px;
+      border-radius: 15px;
+      height: 300px;
+    }
+    
+    .light-mode .chart-container {
+      background: rgba(255, 255, 255, 0.6);
+    }
+    
+    /* Daily Breakdown */
+    .daily-breakdown {
+      margin: 30px 0;
+    }
+    
+    .day-results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    .day-result-card {
+      background: rgba(44, 44, 64, 0.6);
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 420ms cubic-bezier(.2,.9,.2,1);
+    }
+    
+    .light-mode .day-result-card {
+      background: rgba(255, 255, 255, 0.6);
+    }
+    
+    .day-result-card.show {
+      opacity: 1;
+      transform: translateY(0);
     }
     
     /* Rankings */
@@ -323,6 +529,18 @@
       text-align: center;
       transition: all 0.3s;
       border: 2px solid transparent;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 420ms cubic-bezier(.2,.9,.2,1);
+    }
+    
+    .light-mode .ranking-card {
+      background: rgba(255, 255, 255, 0.8);
+    }
+    
+    .ranking-card.show {
+      opacity: 1;
+      transform: translateY(0);
     }
     
     .ranking-card:hover {
@@ -334,6 +552,10 @@
       border-color: var(--warning);
       background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(44, 44, 64, 0.9));
       position: relative;
+    }
+    
+    .light-mode .rank-1 {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(255, 255, 255, 0.9));
     }
     
     .rank-1::before {
@@ -349,6 +571,10 @@
     .rank-last {
       border-color: var(--danger);
       background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(44, 44, 64, 0.9));
+    }
+    
+    .light-mode .rank-last {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(255, 255, 255, 0.9));
     }
     
     .percentage {
@@ -369,11 +595,16 @@
       overflow: hidden;
     }
     
+    .light-mode .progress-bar {
+      background: #e5e7eb;
+    }
+    
     .progress-fill {
       height: 100%;
       border-radius: 10px;
       transition: width 0.8s ease;
       background: linear-gradient(90deg, var(--primary), var(--success));
+      width: 0;
     }
     
     /* Achievements */
@@ -405,11 +636,19 @@
       border-left: 4px solid var(--primary);
     }
     
+    .light-mode .recommendations {
+      background: linear-gradient(135deg, rgba(76, 201, 240, 0.15), rgba(247, 37, 133, 0.15));
+    }
+    
     .recommendation {
       margin: 10px 0;
       padding: 10px;
       background: rgba(255,255,255,0.05);
       border-radius: 8px;
+    }
+    
+    .light-mode .recommendation {
+      background: rgba(0,0,0,0.05);
     }
     
     /* Export Section */
@@ -421,12 +660,44 @@
       border-radius: 15px;
     }
     
+    .light-mode .export-section {
+      background: rgba(255, 255, 255, 0.6);
+    }
+    
     .export-options {
       display: flex;
       gap: 15px;
       justify-content: center;
       margin-top: 15px;
       flex-wrap: wrap;
+    }
+    
+    /* Streaks & Gamification */
+    .streaks-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin: 25px 0;
+    }
+    
+    .streak-card {
+      background: rgba(44, 44, 64, 0.6);
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+    }
+    
+    .light-mode .streak-card {
+      background: rgba(255, 255, 255, 0.6);
+    }
+    
+    .streak-count {
+      font-size: 3em;
+      font-weight: bold;
+      margin: 10px 0;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
     
     /* Notification */
@@ -451,6 +722,37 @@
     .notification.error { background: var(--danger); }
     .notification.info { background: var(--primary); }
     
+    /* Animations */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes floatSlow {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      pointer-events: none;
+      opacity: 0.8;
+      animation: ripple 600ms linear;
+    }
+    
+    @keyframes ripple { 
+      to { transform: scale(4); opacity: 0; } 
+    }
+    
     /* Responsive */
     @media (max-width: 768px) {
       .members-grid {
@@ -466,8 +768,19 @@
         align-items: center;
       }
       
+      .charts-section {
+        grid-template-columns: 1fr;
+      }
+      
       h1 {
         font-size: 2.2em;
+      }
+      
+      .theme-toggle {
+        position: relative;
+        top: 0;
+        right: 0;
+        margin: 10px auto;
       }
     }
   </style>
@@ -475,8 +788,9 @@
 <body>
   <div class="container">
     <header>
+      <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
       <h1>🎯 Study Analytics Pro</h1>
-      <p class="subtitle">Admin-Controlled Team Dashboard • Advanced Reporting</p>
+      <p class="subtitle">Ultimate Team Dashboard • Advanced Analytics & Gamification</p>
     </header>
 
     <!-- Admin Section - Only You Can Modify -->
@@ -500,11 +814,20 @@
       <button class="lock-toggle" onclick="toggleAdminLock()">🔓 Unlock to Edit Goals</button>
     </div>
 
+    <!-- View Toggles -->
+    <div class="view-toggles">
+      <button class="view-btn active" data-view="input" onclick="switchView('input', this)">📝 Input Data</button>
+      <button class="view-btn" data-view="results" onclick="switchView('results', this)">📊 View Results</button>
+      <button class="view-btn" data-view="analytics" onclick="switchView('analytics', this)">📈 Advanced Analytics</button>
+    </div>
+
     <!-- Quick Actions -->
     <div class="quick-actions">
       <button class="quick-btn" onclick="fillSampleData()">🎲 Sample Data</button>
       <button class="quick-btn" onclick="quickEntryMode()">⚡ Quick Entry</button>
+      <button class="quick-btn" onclick="startPomodoro()">⏱️ Pomodoro Timer</button>
       <button class="quick-btn" onclick="showTutorial()">📚 Tutorial</button>
+      <button class="quick-btn" onclick="showStudyTips()">💡 Study Tips</button>
     </div>
 
     <!-- Main Controls -->
@@ -524,42 +847,82 @@
     </div>
 
     <!-- Members Input -->
-    <div class="members-grid" id="membersContainer"></div>
+    <div id="inputView">
+      <div class="members-grid" id="membersContainer"></div>
+    </div>
 
     <!-- Results Section -->
-    <div class="results-section" id="resultsSection" style="display: none;">
-      <div class="results-header">
-        <h2>🏆 Team Performance Dashboard</h2>
-        <p>Comprehensive analysis based on 3 days of tracking</p>
-      </div>
-
-      <!-- Team Stats -->
-      <div class="stats-grid" id="teamStats"></div>
-
-      <!-- Achievements -->
-      <div class="achievements" id="achievementsContainer"></div>
-
-      <!-- Recommendations -->
-      <div class="recommendations" id="recommendationsContainer"></div>
-
-      <!-- Rankings -->
-      <div class="rankings-grid" id="rankingsContainer"></div>
-
-      <!-- Export Options -->
-      <div class="export-section" id="exportSection" style="display: none;">
-        <h3>📥 Export Reports</h3>
-        <p>Choose your preferred format:</p>
-        <div class="export-options">
-          <button class="btn btn-warning" onclick="exportToPDF()">
-            <span>📄</span> Download PDF Report
-          </button>
-          <button class="btn btn-success" onclick="exportToCSV()">
-            <span>📊</span> Download CSV Data
-          </button>
-          <button class="btn btn-primary" onclick="exportToImage()">
-            <span>🖼️</span> Save as Image
-          </button>
+    <div id="resultsView" style="display: none;">
+      <div class="results-section">
+        <div class="results-header">
+          <h2>🏆 Team Performance Dashboard</h2>
+          <p>Comprehensive analysis based on 3 days of tracking</p>
         </div>
+
+        <!-- Team Stats -->
+        <div class="stats-grid" id="teamStats"></div>
+
+        <!-- Streaks & Gamification -->
+        <div class="streaks-section" id="streaksContainer"></div>
+
+        <!-- Daily Breakdown -->
+        <div class="daily-breakdown">
+          <h3>📅 Daily Performance</h3>
+          <div class="day-results" id="dailyResults"></div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="achievements" id="achievementsContainer"></div>
+
+        <!-- Recommendations -->
+        <div class="recommendations" id="recommendationsContainer"></div>
+
+        <!-- Rankings -->
+        <div class="rankings-grid" id="rankingsContainer"></div>
+
+        <!-- Export Options -->
+        <div class="export-section" id="exportSection" style="display: none;">
+          <h3>📥 Export Reports</h3>
+          <p>Choose your preferred format:</p>
+          <div class="export-options">
+            <button class="btn btn-warning" onclick="exportToPDF()">
+              <span>📄</span> Download PDF Report
+            </button>
+            <button class="btn btn-success" onclick="exportToCSV()">
+              <span>📊</span> Download CSV Data
+            </button>
+            <button class="btn btn-primary" onclick="exportToImage()">
+              <span>🖼️</span> Save as Image
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Advanced Analytics View -->
+    <div id="analyticsView" style="display: none;">
+      <div class="results-section">
+        <div class="results-header">
+          <h2>📈 Advanced Analytics</h2>
+          <p>Deep insights and trend analysis</p>
+        </div>
+
+        <div class="charts-section">
+          <div class="chart-container">
+            <canvas id="efficiencyChart"></canvas>
+          </div>
+          <div class="chart-container">
+            <canvas id="trendChart"></canvas>
+          </div>
+          <div class="chart-container">
+            <canvas id="comparisonChart"></canvas>
+          </div>
+          <div class="chart-container">
+            <canvas id="productivityChart"></canvas>
+          </div>
+        </div>
+
+        <div class="stats-grid" id="analyticsStats"></div>
       </div>
     </div>
   </div>
@@ -567,26 +930,89 @@
   <!-- Notification -->
   <div id="notification" class="notification"></div>
 
+  <!-- Pomodoro Timer Modal -->
+  <div id="pomodoroModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1001; justify-content: center; align-items: center;">
+    <div style="background: var(--darker); padding: 30px; border-radius: 20px; text-align: center; max-width: 400px;">
+      <h2>⏱️ Pomodoro Timer</h2>
+      <div id="pomodoroTimer" style="font-size: 3em; margin: 20px 0;">25:00</div>
+      <div style="margin: 15px 0;">
+        <label style="display: block; margin-bottom: 8px;">Set Timer Duration (minutes):</label>
+        <input type="number" id="pomodoroMinutes" value="25" min="1" max="120" style="width: 80px; padding: 8px; text-align: center; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white;">
+      </div>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button class="btn btn-success" onclick="startPomodoroTimer()">Start</button>
+        <button class="btn btn-warning" onclick="pausePomodoroTimer()">Pause</button>
+        <button class="btn btn-danger" onclick="closePomodoro()">Close</button>
+      </div>
+      <p style="margin-top: 15px; opacity: 0.8;" id="pomodoroDescription">Focus for 25 minutes, then take a 5-minute break</p>
+    </div>
+  </div>
+
   <script>
     // Initialize jsPDF
     const { jsPDF } = window.jspdf;
 
     const members = [
-      { id: 1, name: "ABHINAV AP", color: "#4cc9f0", avatar: "A" },
-      { id: 2, name: "VAISHNAV C", color: "#f72585", avatar: "V" },
-      { id: 3, name: "ALAN JACOB", color: "#4ade80", avatar: "A" },
-      { id: 4, name: "MUHAMMED ZAMEEL U", color: "#fbbf24", avatar: "M" },
-      { id: 5, name: "JOEL PB", color: "#a855f7", avatar: "J" },
-      { id: 6, name: "JIMIL GEORGE", color: "#06d6a0", avatar: "J" },
-      { id: 7, name: "AROMAL AM", color: "#ff6b6b", avatar: "A" }
+      { id: 1, name: "ABHINAV AP", color: "#4cc9f0", avatar: "A", points: 0, streak: 0 },
+      { id: 2, name: "VAISHNAV C", color: "#f72585", avatar: "V", points: 0, streak: 0 },
+      { id: 3, name: "ALAN JACOB", color: "#4ade80", avatar: "A", points: 0, streak: 0 },
+      { id: 4, name: "MUHAMMED ZAMEEL U", color: "#fbbf24", avatar: "M", points: 0, streak: 0 },
+      { id: 5, name: "JOEL PB", color: "#a855f7", avatar: "J", points: 0, streak: 0 },
+      { id: 6, name: "JIMIL GEORGE", color: "#06d6a0", avatar: "J", points: 0, streak: 0 },
+      { id: 7, name: "AROMAL AM", color: "#ff6b6b", avatar: "A", points: 0, streak: 0 }
     ];
 
     let adminUnlocked = false;
     let currentResults = null;
+    let pomodoroInterval = null;
+    let pomodoroTimeLeft = 25 * 60;
+    let isPomodoroRunning = false;
+
+    // IntersectionObserver for animations
+    const observerOptions = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.15
+    };
+
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('show');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
 
     // Initialize
     loadMemberCards();
     loadSavedData();
+    setupRippleEffects();
+
+    function toggleTheme() {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      localStorage.setItem('studyTheme', isLight ? 'light' : 'dark');
+      showNotification(`Switched to ${isLight ? 'light' : 'dark'} mode`, 'info');
+    }
+
+    function switchView(view, btn) {
+      document.getElementById('inputView').style.display = view === 'input' ? 'block' : 'none';
+      document.getElementById('resultsView').style.display = view === 'results' ? 'block' : 'none';
+      document.getElementById('analyticsView').style.display = view === 'analytics' ? 'block' : 'none';
+
+      document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+      if (btn) {
+        btn.classList.add('active');
+      } else {
+        const fallback = document.querySelector(`.view-btn[data-view="${view}"]`);
+        if (fallback) fallback.classList.add('active');
+      }
+
+      if (view === 'analytics' && currentResults) {
+        renderAdvancedCharts();
+      }
+    }
 
     function toggleAdminLock() {
       adminUnlocked = !adminUnlocked;
@@ -612,12 +1038,13 @@
       const container = document.getElementById('membersContainer');
       container.innerHTML = '';
 
-      members.forEach(member => {
+      members.forEach((member, idx) => {
         const card = `
-          <div class="member-card" style="border-left-color: ${member.color}">
+          <div class="member-card" style="border-left-color: ${member.color}; --delay: ${idx * 0.08}s">
             <div class="member-header">
               <div class="member-name" style="color: ${member.color}">
                 ${member.name}
+                <div style="font-size: 0.7em; opacity: 0.8;">⭐ ${member.points} pts • 🔥 ${member.streak} days</div>
               </div>
               <div class="member-avatar" style="background: ${member.color}">
                 ${member.avatar}
@@ -745,6 +1172,12 @@
         const metGoal = avgDailyStudy >= minStudyGoal && percentage >= targetEfficiency;
         if (metGoal) goalsMet++;
 
+        // Calculate points and streaks
+        const points = Math.round(percentage * 2 + (metGoal ? 50 : 0));
+        const streak = metGoal ? (member.streak + 1) : 0;
+        member.points = points;
+        member.streak = streak;
+
         results.push({
           member,
           study: totalStudy,
@@ -752,7 +1185,9 @@
           percentage,
           dailyData,
           metGoal,
-          avgDailyStudy
+          avgDailyStudy,
+          points,
+          streak
         });
       });
 
@@ -763,7 +1198,7 @@
 
     function showResults(results, totalStudy, totalScreen, goalsMet, teamGoal) {
       results.sort((a, b) => b.percentage - a.percentage);
-      document.getElementById('resultsSection').style.display = 'block';
+      switchView('results');
       document.getElementById('exportSection').style.display = 'block';
 
       const teamPercentage = totalScreen > 0 ? (totalStudy / totalScreen * 100) : 0;
@@ -793,6 +1228,41 @@
         </div>
       `;
 
+      // Streaks & Gamification
+      document.getElementById('streaksContainer').innerHTML = `
+        <div class="streak-card">
+          <div>🔥 Longest Streak</div>
+          <div class="streak-count">${Math.max(...results.map(r => r.streak))}</div>
+          <div>Consecutive days meeting goals</div>
+        </div>
+        <div class="streak-card">
+          <div>⭐ Total Points</div>
+          <div class="streak-count">${results.reduce((sum, r) => sum + r.points, 0)}</div>
+          <div>Team achievement score</div>
+        </div>
+        <div class="streak-card">
+          <div>🚀 Most Improved</div>
+          <div class="streak-count">+${Math.max(...results.map(r => r.points - 100))}</div>
+          <div>Points above baseline</div>
+        </div>
+      `;
+
+      // Daily Breakdown
+      const dailyResults = document.getElementById('dailyResults');
+      dailyResults.innerHTML = members.map(member => {
+        const result = results.find(r => r.member.id === member.id);
+        return `
+          <div class="day-result-card">
+            <div style="color: ${member.color}; font-weight: bold;">${member.name}</div>
+            ${result.dailyData.map(day => `
+              <div style="margin: 5px 0; font-size: 0.9em;">
+                Day ${day.day}: ${day.percentage.toFixed(1)}%
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }).join('');
+
       // Achievements
       const achievements = calculateAchievements(results, teamPercentage, teamGoal);
       document.getElementById('achievementsContainer').innerHTML = achievements.map(ach => `
@@ -819,20 +1289,84 @@
             </div>
             <div class="percentage">${result.percentage.toFixed(1)}%</div>
             <div>📚 ${studyH}h ${studyM}m total study</div>
-            <div>⭐ Productivity: ${productivityScore}/100</div>
+            <div>⭐ ${result.points} points • 🔥 ${result.streak} day streak</div>
             <div class="progress-bar">
-              <div class="progress-fill" style="width: ${Math.min(result.percentage, 100)}%;"></div>
+              <div class="progress-fill" data-target="${Math.min(result.percentage, 100)}" style="background: ${result.member.color};"></div>
             </div>
             <div style="margin-top: 15px; font-weight: bold; font-size: 1.1em;">
               Rank: #${rank} ${rank === 1 ? '👑' : result.metGoal ? '✅' : '💪'}
             </div>
             ${result.metGoal ? '<div style="color: #4ade80; margin-top: 5px;">✅ Goals Achieved</div>' : 
-              `<div style="color: #fbbf24; margin-top: 5px;">🎯 ${(minStudyGoal/60 - result.avgDailyStudy/60).toFixed(1)}h more needed</div>`}
+              `<div style="color: #fbbf24; margin-top: 5px;">🎯 ${((minStudyGoal/60) - (result.avgDailyStudy/60)).toFixed(1)}h more needed</div>`}
           </div>
         `;
       }).join('');
 
-      document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+      // ANIMATIONS - Called after DOM creation
+      setTimeout(() => {
+        animateProgressBars();
+        revealStagger('.stat-card', 80);
+        revealStagger('.streak-card', 60);
+        revealStagger('.ranking-card', 70);
+        revealStagger('.day-result-card', 60);
+        
+        // Set up intersection observer for newly created elements
+        document.querySelectorAll('.stat-card, .ranking-card, .day-result-card, .streak-card').forEach((el, i) => {
+          el.style.transitionDelay = `${i * 0.1}s`;
+          observer.observe(el);
+        });
+      }, 100);
+    }
+
+    function renderAdvancedCharts() {
+      // Efficiency Distribution Chart
+      const efficiencyCtx = document.getElementById('efficiencyChart').getContext('2d');
+      new Chart(efficiencyCtx, {
+        type: 'bar',
+        data: {
+          labels: currentResults.map(r => r.member.name),
+          datasets: [{
+            label: 'Efficiency %',
+            data: currentResults.map(r => r.percentage),
+            backgroundColor: currentResults.map(r => r.member.color),
+            borderColor: currentResults.map(r => r.member.color),
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Member Efficiency Distribution'
+            }
+          }
+        }
+      });
+
+      // Trend Analysis Chart
+      const trendCtx = document.getElementById('trendChart').getContext('2d');
+      new Chart(trendCtx, {
+        type: 'line',
+        data: {
+          labels: ['Day 1', 'Day 2', 'Day 3'],
+          datasets: currentResults.slice(0, 3).map(result => ({
+            label: result.member.name,
+            data: result.dailyData.map(d => d.percentage),
+            borderColor: result.member.color,
+            tension: 0.3
+          }))
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Top 3 Members - Daily Trends'
+            }
+          }
+        }
+      });
     }
 
     function calculateAchievements(results, teamPercentage, teamGoal) {
@@ -845,6 +1379,8 @@
       if (results.every(r => r.percentage > 30)) achievements.push("⚡ Balanced Team");
       if (top.percentage > 70) achievements.push("🎯 Productivity Master");
       if (results.filter(r => r.percentage > 45).length >= 4) achievements.push("🌟 High Performers");
+      if (Math.max(...results.map(r => r.streak)) >= 3) achievements.push("🔥 Streak Masters");
+      if (results.reduce((sum, r) => sum + r.points, 0) > 2000) achievements.push("⭐ Point Champions");
 
       return achievements;
     }
@@ -876,6 +1412,14 @@
         );
       }
 
+      // Streak-based recommendations
+      const streakLeaders = results.filter(r => r.streak >= 2);
+      if (streakLeaders.length > 0) {
+        recommendations.push(
+          `<div class="recommendation">🔥 <strong>Streak leaders:</strong> ${streakLeaders.map(m => m.member.name).join(', ')} are maintaining great consistency!</div>`
+        );
+      }
+
       return recommendations.join('');
     }
 
@@ -895,7 +1439,12 @@
           targetEff: document.getElementById('targetEfficiency').value,
           teamGoal: document.getElementById('teamGoal').value
         },
-        adminUnlocked: adminUnlocked
+        adminUnlocked: adminUnlocked,
+        theme: document.body.classList.contains('light-mode') ? 'light' : 'dark',
+        memberData: members.reduce((acc, member) => {
+          acc[member.id] = { points: member.points, streak: member.streak };
+          return acc;
+        }, {})
       };
 
       members.forEach(member => {
@@ -919,11 +1468,26 @@
       if (saved) {
         const data = JSON.parse(saved);
         
+        // Load theme
+        if (data.theme === 'light') {
+          document.body.classList.add('light-mode');
+        }
+        
         // Load goals
         if (data.goals) {
           document.getElementById('minStudyGoal').value = data.goals.minStudy || 4;
           document.getElementById('targetEfficiency').value = data.goals.targetEff || 50;
           document.getElementById('teamGoal').value = data.goals.teamGoal || 55;
+        }
+
+        // Load member points and streaks
+        if (data.memberData) {
+          members.forEach(member => {
+            if (data.memberData[member.id]) {
+              member.points = data.memberData[member.id].points || 0;
+              member.streak = data.memberData[member.id].streak || 0;
+            }
+          });
         }
 
         // Load admin state
@@ -1028,7 +1592,8 @@
     function exportToImage() {
       showNotification('Generating image...', 'info');
       
-      html2canvas(document.getElementById('resultsSection')).then(canvas => {
+      const element = document.getElementById('resultsView');
+      html2canvas(element).then(canvas => {
         const link = document.createElement('a');
         link.download = 'study_dashboard.png';
         link.href = canvas.toDataURL('image/png');
@@ -1051,6 +1616,8 @@
       if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
         localStorage.removeItem('studyTeamData');
         members.forEach(member => {
+          member.points = 0;
+          member.streak = 0;
           for (let day = 1; day <= 3; day++) {
             document.getElementById(`m${member.id}d${day}StudyH`).value = '';
             document.getElementById(`m${member.id}d${day}StudyM`).value = '';
@@ -1059,10 +1626,72 @@
             updateDayStatus(member.id, day);
           }
         });
-        document.getElementById('resultsSection').style.display = 'none';
+        document.getElementById('resultsView').style.display = 'none';
         document.getElementById('exportSection').style.display = 'none';
+        switchView('input');
         showNotification('All data has been reset.', 'info');
       }
+    }
+
+    // Pomodoro Timer Functions
+    function startPomodoro() {
+      document.getElementById('pomodoroModal').style.display = 'flex';
+      const customMinutes = parseInt(document.getElementById('pomodoroMinutes').value) || 25;
+      pomodoroTimeLeft = customMinutes * 60;
+      updatePomodoroDisplay();
+      updatePomodoroDescription(customMinutes);
+    }
+
+    function closePomodoro() {
+      document.getElementById('pomodoroModal').style.display = 'none';
+      if (pomodoroInterval) {
+        clearInterval(pomodoroInterval);
+        isPomodoroRunning = false;
+      }
+    }
+
+    function startPomodoroTimer() {
+      if (!isPomodoroRunning) {
+        const customMinutes = parseInt(document.getElementById('pomodoroMinutes').value) || 25;
+        pomodoroTimeLeft = customMinutes * 60;
+        updatePomodoroDescription(customMinutes);
+        
+        isPomodoroRunning = true;
+        pomodoroInterval = setInterval(() => {
+          pomodoroTimeLeft--;
+          updatePomodoroDisplay();
+          
+          if (pomodoroTimeLeft <= 0) {
+            clearInterval(pomodoroInterval);
+            isPomodoroRunning = false;
+            showNotification('Pomodoro session complete! Take a 5-minute break.', 'success');
+            // Play completion sound (if available)
+            if (typeof Audio !== 'undefined') {
+              const audio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
+              audio.play().catch(() => {});
+            }
+          }
+        }, 1000);
+      }
+    }
+
+    function pausePomodoroTimer() {
+      if (pomodoroInterval) {
+        clearInterval(pomodoroInterval);
+        isPomodoroRunning = false;
+      }
+    }
+
+    function updatePomodoroDisplay() {
+      const minutes = Math.floor(pomodoroTimeLeft / 60);
+      const seconds = pomodoroTimeLeft % 60;
+      document.getElementById('pomodoroTimer').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function updatePomodoroDescription(minutes) {
+      document.getElementById('pomodoroDescription').textContent = 
+        `Focus for ${minutes} minutes, then take a 5-minute break`;
     }
 
     function showNotification(message, type) {
@@ -1076,7 +1705,7 @@
     }
 
     function showTutorial() {
-      alert(`🎯 STUDY TRACKER TUTORIAL:
+      alert(`🎯 STUDY ANALYTICS PRO - ULTIMATE TUTORIAL:
 
 ADMIN FEATURES (Only You):
 • Click "Unlock to Edit Goals" to modify targets
@@ -1089,13 +1718,75 @@ TEAM FEATURES:
 • Click "Calculate Analytics" for insights
 • "Save Progress" stores all data automatically
 
-📊 EXPORT OPTIONS:
-• PDF: Professional report with rankings
-• CSV: Raw data for spreadsheets
-• Image: Dashboard screenshot
+🎮 GAMIFICATION:
+• Earn points for efficient study habits
+• Build streaks for consistent performance
+• Unlock achievements for milestones
+• Compete on the leaderboard
 
-💡 TIP: Goals are admin-only to maintain consistency!`);
+📊 ADVANCED ANALYTICS:
+• View detailed charts and trends
+• Compare performance across days
+• Get personalized recommendations
+• Track team progress over time
+
+⏱️ PRODUCTIVITY TOOLS:
+• Customizable Pomodoro Timer (1-120 minutes)
+• Dark/Light mode for comfort
+• Study tips and recommendations
+
+💡 TIP: Consistent tracking leads to better insights and improved performance!`);
+    }
+
+    function showStudyTips() {
+      const tips = [
+        "🎯 Use the Pomodoro Technique: 25 minutes focus, 5 minutes break",
+        "📚 Study in a dedicated, distraction-free environment",
+        "💧 Stay hydrated - it improves cognitive function",
+        "🔍 Review material within 24 hours for better retention",
+        "🎵 Use background music or white noise to improve focus",
+        "📝 Take handwritten notes for better memory retention",
+        "🔄 Mix different subjects to prevent boredom",
+        "🎯 Set specific, achievable goals for each study session",
+        "💤 Get adequate sleep - it's crucial for memory consolidation",
+        "🏃‍♂️ Take regular breaks to maintain mental freshness"
+      ];
+      
+      const randomTip = tips[Math.floor(Math.random() * tips.length)];
+      showNotification(`💡 Study Tip: ${randomTip}`, 'info');
+    }
+
+    // Animation helpers
+    function animateProgressBars() {
+      const fills = document.querySelectorAll('.progress-fill');
+      fills.forEach((el, i) => {
+        const target = Number(el.dataset.target || 0);
+        setTimeout(() => { el.style.width = target + '%'; }, i * 100);
+      });
+    }
+
+    function revealStagger(selector, delay = 80) {
+      document.querySelectorAll(selector).forEach((el, i) => {
+        setTimeout(() => el.classList.add('show'), i * delay);
+      });
+    }
+
+    function setupRippleEffects() {
+      document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const rect = btn.getBoundingClientRect();
+          const circle = document.createElement('span');
+          circle.className = 'ripple';
+          const size = Math.max(rect.width, rect.height);
+          circle.style.width = circle.style.height = size + 'px';
+          circle.style.left = (e.clientX - rect.left - size/2) + 'px';
+          circle.style.top = (e.clientY - rect.top - size/2) + 'px';
+          btn.appendChild(circle);
+          circle.addEventListener('animationend', () => circle.remove());
+        });
+      });
     }
   </script>
 </body>
 </html>
+
